@@ -4,13 +4,15 @@ canvas.height = window.innerHeight;
 
 const ctx = canvas.getContext("2d");
 
+// offsetY é usado para alterar o valor de y das raquetes ao movê-las, preservando a função getter
 let leftPaddle = {
   width: 12,
   height: 115,
   x: 8,
   get y() {
-    return canvas.height / 2 - this.height;
-  }
+    return canvas.height / 2 - this.height + this.offsetY;
+  },
+  offsetY: 0
 }
 
 let rightPaddle = {
@@ -20,16 +22,17 @@ let rightPaddle = {
     return canvas.width - this.width - 8;
   },
   get y() {
-    return canvas.height / 2 - this.height;
-  }
+    return canvas.height / 2 - this.height + this.offsetY;
+  },
+  offsetY: 0
 }
 
 let ball = {
   x: canvas.width / 2,
   y: canvas.height / 2,
   r: 15,
-  dx: 5, // velocidade horizontal
-  dy: 5  // velocidade vertical
+  dx: 3, // velocidade horizontal
+  dy: 3  // velocidade vertical
 }
 
 function drawLeftPaddle() {
@@ -59,9 +62,34 @@ function resetBall() {
   ball.y = canvas.height / 2;
 }
 
+// Armazena o estado das teclas pressionadas
+const keys = {};
+
+document.addEventListener("keydown", event => {
+  keys[event.code] = true;
+});
+
+document.addEventListener("keyup", event => {
+  keys[event.code] = false;
+});
+
 function update() {
   // Apaga o desenho do frame anterior
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Move as raquetes
+  if (keys["KeyW"] && leftPaddle.y > 0) {
+    leftPaddle.offsetY -= 5;
+  }
+  if (keys["KeyS"] && leftPaddle.y + leftPaddle.height < canvas.height) {
+    leftPaddle.offsetY += 5;
+  }
+  if (keys["ArrowUp"] && rightPaddle.y > 0) {
+    rightPaddle.offsetY -= 5;
+  }
+  if (keys["ArrowDown"] && rightPaddle.y + rightPaddle.height < canvas.height) {
+    rightPaddle.offsetY += 5;
+  }
 
   // Desenha os objetos
   drawLeftPaddle();
