@@ -1,6 +1,6 @@
 const canvas = document.getElementById("canvas");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = 800;
+canvas.height = 600;
 
 const ctx = canvas.getContext("2d");
 
@@ -31,8 +31,8 @@ let ball = {
   x: canvas.width / 2,
   y: canvas.height / 2,
   r: 15,
-  dx: 3, // velocidade horizontal
-  dy: 3  // velocidade vertical
+  dx: 10, // velocidade horizontal
+  dy: 10  // velocidade vertical
 }
 
 function drawLeftPaddle() {
@@ -57,15 +57,73 @@ function drawBall() {
   ctx.closePath();
 }
 
+const winMessage = document.getElementById("win-message");
+const newGameButton = document.getElementById("new-game-button");
+
+// Determina se o jogo está ativo ou não
+let gameActive = true;
+
+// Variáveis relacionadas à pontuação do jogo
+const score = document.getElementById("score");
+let leftScore = 0;
+let rightScore = 0;
+
 function resetBall() {
   ball.x = canvas.width / 2;
   ball.y = canvas.height / 2;
+  score.textContent = `${leftScore} x ${rightScore}`;
+
+  if (leftScore === 10 || rightScore === 10) {
+    gameOver();
+  }
+}
+
+function gameOver() {
+  gameActive = false;
+  
+  // A bola fica parada no centro
+  ball.dx = 0;
+  ball.dy = 0;
+
+  // Mensagem e botão aparecem
+  winMessage.classList.remove("hidden");
+  newGameButton.classList.remove("hidden");
+
+  if (leftScore === 10) {
+    winMessage.textContent = "Left player wins!";
+  } else {
+    winMessage.textContent = "Right player wins!";
+  }
+}
+
+newGameButton.addEventListener("click", gameRestart);
+
+function gameRestart() {
+  gameActive = true;
+
+  // Bola volta a se mover
+  ball.dx = 10;
+  ball.dy = 10;
+
+  // Pontuações zeradas
+  leftScore = 0;
+  rightScore = 0;
+  score.textContent = "0 x 0";
+
+  // Mensagem e botão ficam invisíveis
+  winMessage.classList.add("hidden");
+  newGameButton.classList.add("hidden");
 }
 
 // Armazena o estado das teclas pressionadas
 const keys = {};
 
 document.addEventListener("keydown", event => {
+  // Desativa a movimentação das raquetes
+  if (!gameActive) {
+    return;
+  }
+
   keys[event.code] = true;
 });
 
@@ -118,9 +176,16 @@ function update() {
     ball.dy *= -1; // Inverte a velocidade vertical
   }
   
-  // Detecta colisão da bola com as paredes laterais
-  if (ball.x + ball.r > canvas.width || ball.x - ball.r < 0) {
+  // Detecta colisão da bola com a parede da esquerda
+  if (ball.x - ball.r < 0) {
+    rightScore++; // +1 ponto para a raquete da direita
     resetBall(); // Bola volta para o centro
+  }
+
+  // Detecta colisão da bola com a parede da direita
+  if (ball.x + ball.r > canvas.width) {
+    leftScore++; // +1 ponto para a raquete da esquerda
+    resetBall();
   }
 }
 
@@ -129,4 +194,12 @@ function gameLoop() {
   requestAnimationFrame(gameLoop); // Chama o loop novamente
 }
 
-gameLoop(); // Inicia o loop
+const playButton = document.getElementById("play-button");
+
+// Inicia o loop ao clicar no botão Play
+playButton.addEventListener("click", () => {
+  playButton.classList.add("hidden");
+  score.classList.remove("hidden");
+  score.textContent = "0 x 0";
+  gameLoop();
+});

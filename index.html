@@ -7,7 +7,20 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <canvas id="canvas"></canvas>
+  <div id="score-div">
+    <p id="score">First to score 10 points wins the game!</p>
+  </div>
+  <div id="canvas-div">
+    <canvas id="canvas"></canvas>
+    <button id="play-button">Play</button>
+    <p id="win-message" class="hidden"></p>
+    <button id="new-game-button" class="hidden">New Game</button>
+  </div>
+  <div id="controls-message-div">
+    <p>&#8226 Controls:</p>
+    <p>Left paddle - W/S keys</p>
+    <p>Right paddle - Up/Down arrows</p>
+  </div>
   <script src="script.js"></script>
 </body>
 </html>
