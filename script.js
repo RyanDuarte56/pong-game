@@ -59,6 +59,7 @@ function drawBall() {
 
 const winMessage = document.getElementById("win-message");
 const newGameButton = document.getElementById("new-game-button");
+const enterToNewGameMessage = document.getElementById("enter-to-new-game-message");
 
 // Determina se o jogo está ativo ou não
 let gameActive = true;
@@ -85,9 +86,10 @@ function gameOver() {
   ball.dx = 0;
   ball.dy = 0;
 
-  // Mensagem e botão aparecem
+  // Mensagens e botão aparecem
   winMessage.classList.remove("hidden");
   newGameButton.classList.remove("hidden");
+  enterToNewGameMessage.classList.remove("hidden");
 
   if (leftScore === 10) {
     winMessage.textContent = "Left player wins!";
@@ -96,7 +98,13 @@ function gameOver() {
   }
 }
 
+// Clique no botão ou pressionar Enter realizam o restart
 newGameButton.addEventListener("click", gameRestart);
+document.addEventListener("keydown", event => {
+  if (event.code === "Enter" && !newGameButton.classList.contains("hidden")) {
+    gameRestart();
+  }
+});
 
 function gameRestart() {
   gameActive = true;
@@ -110,9 +118,10 @@ function gameRestart() {
   rightScore = 0;
   score.textContent = "0 x 0";
 
-  // Mensagem e botão ficam invisíveis
+  // Mensagens e botão ficam invisíveis
   winMessage.classList.add("hidden");
   newGameButton.classList.add("hidden");
+  enterToNewGameMessage.classList.add("hidden");
 }
 
 // Armazena o estado das teclas pressionadas
@@ -131,6 +140,7 @@ document.addEventListener("keyup", event => {
   keys[event.code] = false;
 });
 
+// Loop principal
 function update() {
   // Apaga o desenho do frame anterior
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -187,19 +197,25 @@ function update() {
     leftScore++; // +1 ponto para a raquete da esquerda
     resetBall();
   }
-}
 
-function gameLoop() {
-  update(); // Atualiza a animação
-  requestAnimationFrame(gameLoop); // Chama o loop novamente
+  requestAnimationFrame(update); // Chama o loop novamente
 }
 
 const playButton = document.getElementById("play-button");
+const enterToPlayMessage = document.getElementById("enter-to-play-message");
 
-// Inicia o loop ao clicar no botão Play
-playButton.addEventListener("click", () => {
+// Inicia o loop ao clicar no botão Play ou pressionar Enter
+playButton.addEventListener("click", startLoop);
+document.addEventListener("keydown", event => {
+  if (event.code === "Enter" && !playButton.classList.contains("hidden")) {
+    startLoop();
+  }
+});
+
+function startLoop() {
   playButton.classList.add("hidden");
+  enterToPlayMessage.classList.add("hidden");
   score.classList.remove("hidden");
   score.textContent = "0 x 0";
-  gameLoop();
-});
+  update();
+}
