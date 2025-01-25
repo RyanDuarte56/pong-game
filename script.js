@@ -4,36 +4,43 @@ canvas.height = 600;
 
 const ctx = canvas.getContext("2d");
 
-// offsetY é usado para alterar o valor de y das raquetes ao movê-las, preservando a função getter
 let leftPaddle = {
   width: 12,
   height: 115,
-  x: 8,
-  get y() {
-    return canvas.height / 2 - this.height + this.offsetY;
-  },
-  offsetY: 0
-}
+  x: 8
+};
+
+leftPaddle.y = canvas.height / 2 - leftPaddle.height;
 
 let rightPaddle = {
   width: 12,
-  height: 115,
-  get x() {
-    return canvas.width - this.width - 8;
-  },
-  get y() {
-    return canvas.height / 2 - this.height + this.offsetY;
-  },
-  offsetY: 0
+  height: 115
+};
+
+rightPaddle.x = canvas.width - rightPaddle.width - 8;
+rightPaddle.y = canvas.height / 2 - rightPaddle.height;
+
+// Gera um ângulo entre 30° e 45° e soma com angleOffset para cair em um dos 4 quadrantes
+function generateAngle() {
+  let angleOffset = [0, 7 * (Math.PI / 12), Math.PI, 19 * (Math.PI / 12)][Math.floor(Math.random() * 4)];
+
+  return Math.random() * (Math.PI / 12) + Math.PI / 6 + angleOffset;
 }
+
+// Velocidade e ângulo iniciais da bola
+const initialSpeed = 5;
+const initialAngle = generateAngle();
 
 let ball = {
   x: canvas.width / 2,
   y: canvas.height / 2,
   r: 15,
-  dx: 10, // velocidade horizontal
-  dy: 10  // velocidade vertical
-}
+  speed: initialSpeed,
+  angle: initialAngle
+};
+
+ball.dx = ball.speed * Math.cos(ball.angle); // velocidade horizontal
+ball.dy = ball.speed * Math.sin(ball.angle); // velocidade vertical
 
 function drawLeftPaddle() {
   ctx.beginPath();
@@ -69,13 +76,32 @@ const score = document.getElementById("score");
 let leftScore = 0;
 let rightScore = 0;
 
+// Armazena id do setInterval que aumentará progressivamente a velocidade da bola
+let speedInterval;
+
+function changeSpeed() {
+  ball.speed++;
+
+  let currentAngle = Math.atan2(ball.dy, ball.dx);
+
+  ball.dx = ball.speed * Math.cos(currentAngle);
+  ball.dy = ball.speed * Math.sin(currentAngle);
+}
+
 function resetBall() {
   ball.x = canvas.width / 2;
   ball.y = canvas.height / 2;
+  ball.speed = initialSpeed;
+  ball.angle = generateAngle();
+  ball.dx = ball.speed * Math.cos(ball.angle);
+  ball.dy = ball.speed * Math.sin(ball.angle);
   score.textContent = `${leftScore} x ${rightScore}`;
+  clearInterval(speedInterval);
 
   if (leftScore === 10 || rightScore === 10) {
     gameOver();
+  } else {
+    speedInterval = setInterval(changeSpeed, 5000);
   }
 }
 
@@ -109,10 +135,6 @@ document.addEventListener("keydown", event => {
 function gameRestart() {
   gameActive = true;
 
-  // Bola volta a se mover
-  ball.dx = 10;
-  ball.dy = 10;
-
   // Pontuações zeradas
   leftScore = 0;
   rightScore = 0;
@@ -122,6 +144,8 @@ function gameRestart() {
   winMessage.classList.add("hidden");
   newGameButton.classList.add("hidden");
   enterToNewGameMessage.classList.add("hidden");
+
+  resetBall();
 }
 
 // Armazena o estado das teclas pressionadas
@@ -147,16 +171,16 @@ function update() {
 
   // Move as raquetes
   if (keys["KeyW"] && leftPaddle.y > 0) {
-    leftPaddle.offsetY -= 5;
+    leftPaddle.y -= 5;
   }
   if (keys["KeyS"] && leftPaddle.y + leftPaddle.height < canvas.height) {
-    leftPaddle.offsetY += 5;
+    leftPaddle.y += 5;
   }
   if (keys["ArrowUp"] && rightPaddle.y > 0) {
-    rightPaddle.offsetY -= 5;
+    rightPaddle.y -= 5;
   }
   if (keys["ArrowDown"] && rightPaddle.y + rightPaddle.height < canvas.height) {
-    rightPaddle.offsetY += 5;
+    rightPaddle.y += 5;
   }
 
   // Desenha os objetos
@@ -217,5 +241,6 @@ function startLoop() {
   enterToPlayMessage.classList.add("hidden");
   score.classList.remove("hidden");
   score.textContent = "0 x 0";
+  speedInterval = setInterval(changeSpeed, 5000);
   update();
 }
