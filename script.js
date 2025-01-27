@@ -1,6 +1,22 @@
+const modal = document.getElementById("modal");
+const closeModal = document.getElementById("close-modal");
+closeModal.addEventListener("click", () => {
+  modal.style.display = "none";
+});
+
 const canvas = document.getElementById("canvas");
 canvas.width = 800;
 canvas.height = 600;
+
+// Alinha mensagens de controles do jogo
+function positionControls() {
+  const controls = document.getElementById("controls-message-div");
+  controls.style.left = `${(window.innerWidth - canvas.width) / 2}px`;
+  controls.style.top = `${canvas.height + 10}px`;
+}
+
+positionControls();
+window.addEventListener("resize", positionControls);
 
 const ctx = canvas.getContext("2d");
 
@@ -28,7 +44,7 @@ function generateAngle() {
 }
 
 // Velocidade e ângulo iniciais da bola
-const initialSpeed = 5;
+const initialSpeed = 6.5;
 const initialAngle = generateAngle();
 
 let ball = {
@@ -98,7 +114,7 @@ function resetBall() {
   score.textContent = `${leftScore} x ${rightScore}`;
   clearInterval(speedInterval);
 
-  if (leftScore === 10 || rightScore === 10) {
+  if (leftScore === 5 || rightScore === 5) {
     gameOver();
   } else {
     speedInterval = setInterval(changeSpeed, 5000);
@@ -117,7 +133,7 @@ function gameOver() {
   newGameButton.classList.remove("hidden");
   enterToNewGameMessage.classList.remove("hidden");
 
-  if (leftScore === 10) {
+  if (leftScore === 5) {
     winMessage.textContent = "Left player wins!";
   } else {
     winMessage.textContent = "Right player wins!";

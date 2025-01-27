@@ -7,8 +7,14 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="modal">
+    <div id="modal-content">
+      <p id="modal-text">This game only works on desktop and laptop devices. It doesn't work on smartphones! You can play it with 2 people or just by yourself. Have fun!</p>
+      <button id="close-modal">Got it!</button>
+    </div>
+  </div>
   <div id="score-div">
-    <p id="score">First to score 10 points wins the game!</p>
+    <p id="score">First to score 5 points wins the game!</p>
   </div>
   <div id="canvas-div">
     <canvas id="canvas"></canvas>
@@ -17,11 +23,11 @@
     <p id="win-message" class="hidden"></p>
     <button id="new-game-button" class="hidden">New Game</button>
     <p id="enter-to-new-game-message" class="enter-message hidden">(or press Enter)</p>
-  </div>
-  <div id="controls-message-div">
-    <p>&#8226 Controls:</p>
-    <p>Left paddle - W/S keys</p>
-    <p>Right paddle - Up/Down arrows</p>
+    <div id="controls-message-div">
+      <p>&#8226 Controls:</p>
+      <p>Left paddle - W/S keys</p>
+      <p>Right paddle - Up/Down arrows</p>
+    </div>
   </div>
   <script src="script.js"></script>
 </body>
