@@ -1,7 +1,10 @@
 const modal = document.getElementById("modal");
 const closeModal = document.getElementById("close-modal");
+let modalClosed = false;
+
 closeModal.addEventListener("click", () => {
   modal.style.display = "none";
+  modalClosed = true;
 });
 
 const canvas = document.getElementById("canvas");
@@ -26,7 +29,7 @@ let leftPaddle = {
   x: 8
 };
 
-leftPaddle.y = canvas.height / 2 - leftPaddle.height;
+leftPaddle.y = (canvas.height - leftPaddle.height) / 2;
 
 let rightPaddle = {
   width: 12,
@@ -34,7 +37,7 @@ let rightPaddle = {
 };
 
 rightPaddle.x = canvas.width - rightPaddle.width - 8;
-rightPaddle.y = canvas.height / 2 - rightPaddle.height;
+rightPaddle.y = (canvas.height - rightPaddle.height) / 2;
 
 // Gera um ângulo entre 30° e 45° e soma com angleOffset para cair em um dos 4 quadrantes
 function generateAngle() {
@@ -44,7 +47,7 @@ function generateAngle() {
 }
 
 // Velocidade e ângulo iniciais da bola
-const initialSpeed = 6.5;
+const initialSpeed = 6;
 const initialAngle = generateAngle();
 
 let ball = {
@@ -151,6 +154,10 @@ document.addEventListener("keydown", event => {
 function gameRestart() {
   gameActive = true;
 
+  // Raquetes centralizadas
+  leftPaddle.y = (canvas.height - leftPaddle.height) / 2;
+  rightPaddle.y = (canvas.height - rightPaddle.height) / 2;
+
   // Pontuações zeradas
   leftScore = 0;
   rightScore = 0;
@@ -247,7 +254,7 @@ const enterToPlayMessage = document.getElementById("enter-to-play-message");
 // Inicia o loop ao clicar no botão Play ou pressionar Enter
 playButton.addEventListener("click", startLoop);
 document.addEventListener("keydown", event => {
-  if (event.code === "Enter" && !playButton.classList.contains("hidden")) {
+  if (event.code === "Enter" && !playButton.classList.contains("hidden") && modalClosed) {
     startLoop();
   }
 });
